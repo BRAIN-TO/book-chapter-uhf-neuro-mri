@@ -6,35 +6,80 @@
 % Author: Lars Kasper
 % Created: 2020-02-13
 
-idSubject = 'UHFBOLD';
-vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
-iEpiTrajArray = [1:2:6];
-iSpiralTrajArray = [2:2:6];
+% exploring the following:
+% resolution (cartesian): 3 2 1 0.75 0.5 0.25(?) mm
+% trajetories: EPI, 2D Spiral
+% gradient system: standard, high end clinical, 
+% insert gradient (Weiger et al., 2018, MRM)
+%   serial mode (higher voltage, higher SR)
+%   parallel mode (higher current, higher Gmax)
 
-if ispc
-    pathProject = 'C:\Users\kasperla\UHN\Brain-TO - BookChapterUltraHighFieldNeuroMRI - BookChapterUltraHighFieldNeuroMRI';
-    pathData = fullfile(pathProject, 'data');
-    pathCodeTrajGen = 'C:\Users\kasperla\Documents\Code\Recon\utils\nominalTrajectory';
-    pathRecon = 'C:\Users\kasperla\Documents\Code\Recon';
-    % add paths for traj creation
-    addpath(genpath(pathRecon));
-    addpath(genpath(pathCodeTrajGen));
+idSubject = 'UHFBOLD'; % 'SYNAPTIVE'; %'UHFBOLD';
+vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
+iEpiTrajArray = [3];
+iSpiralTrajArray = [4];
+
+doUseGradientFile = false; % if false, take array population from arrays below
+
+resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
+RArray = [1 2 3 4];
+
+switch idSubject
+    case 'UHFBOLD'
+        GmaxArray = [40 80 100 200]*1e-3;
+        SRmaxArray = [200 200 1200 600];
+    case 'SYNAPTIVE'
+        GmaxArray = [40 80 100 100 200]*1e-3;
+        SRmaxArray = [200 200 400 1200 600];
 end
 
+paths = uhfbold_setup_paths();
+
 % where to write down the gradient files for easy access later on
-pathExport = fullfile(pathData, 'exportGradientsSiemens');
-[~,~] = mkdir(pathExport);
+[~,~] = mkdir(paths.export_single_folder);
 
-pathThis = fileparts(mfilename('fullpath'));
+if doUseGradientFile    
+    fileNameIndex = fullfile(paths.code.analysis, ...
+        sprintf('index_gradient_files_%s.m', idSubject));
+    
+    % Leave out dxSArray(t) & fovSArray for 2D trajectories OR set to zero.
+    [idArray, fovMArray, fovPArray, fovSArray, dxMArray, dxPArray, dxSArray,...
+        rPArray, rSArray, nIlArray, maxGArray, maxSrArray, tAcqArray, trajDirArray, ...
+        trajTypeArray, scheme3DArray, nPlanesPerShotArray] = ...
+        read_index_gradient_files(fileNameIndex);
+else
+    nGradSystems = numel(GmaxArray);
+    [trajTypeGrid, idGradSystemGrid, RGrid, resGrid] = ndgrid(1:2, 1:nGradSystems, RArray, resArray);
+    nTrajs = numel(resGrid);
+    
+    iEpiTrajArray = 1:2:nTrajs;
+    iSpiralTrajArray = 2:2:nTrajs;
 
-fileNameIndex = fullfile(pathThis, ...
-    sprintf('index_gradient_files_%s.m', idSubject));
-
-% Leave out dxSArray(t) & fovSArray for 2D trajectories OR set to zero.
-[idArray, fovMArray, fovPArray, fovSArray, dxMArray, dxPArray, dxSArray,...
-    rPArray, rSArray, nIlArray, maxGArray, maxSrArray, tAcqArray, trajDirArray, ...
-    trajTypeArray, scheme3DArray, nPlanesPerShotArray] = ...
-    read_index_gradient_files(fileNameIndex);
+    FOV = 220e-3;
+    
+    fovMArray(1:nTrajs) = FOV;
+    fovPArray(1:nTrajs) = FOV;
+    fovSArray(1:nTrajs) = 0;
+    % for spirals, adjust resolution by sqrt(pi/4)
+    dxMArray(iEpiTrajArray) = resGrid(iEpiTrajArray);
+    dxPArray(iEpiTrajArray) = resGrid(iEpiTrajArray);
+    dxMArray(iSpiralTrajArray) = resGrid(iSpiralTrajArray)*sqrt(pi/4);
+    dxPArray(iSpiralTrajArray) = resGrid(iSpiralTrajArray)*sqrt(pi/4);
+    dxSArray(1:nTrajs) = 0;
+    rPArray(1:nTrajs) = RGrid(:);
+    rSArray(1:nTrajs) = 1;
+    scheme3DArray(1:nTrajs) = {'stack'};
+    nPlanesPerShotArray(1:nTrajs) = 1;
+    nIlArray(1:nTrajs) = 1;
+    idArray = 1:nTrajs;
+    trajTypeArray(iEpiTrajArray) = {'EPI'};
+    trajTypeArray(iSpiralTrajArray) = {'minTime'};
+    maxGArray = GmaxArray(idGradSystemGrid);
+    maxSrArray = SRmaxArray(idGradSystemGrid);
+    tAcqArray(1:nTrajs) = 0;
+    trajDirArray(iEpiTrajArray) = {'0'}; % is nExtraEchoes for EPI
+    trajDirArray(iSpiralTrajArray) = {'out'}; % is spiral direction in/out for spiral
+end
 
 
 switch upper(vendor)
@@ -47,7 +92,7 @@ end
 %% Create Spirals
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for t = iSpiralTrajArray
+for t = iSpiralTrajArray([[2:5:end] [3:5:end]])
     id = idArray(t);
     create_matched_filter_spiral(...
         'dtGradient', dtGradient, ...
@@ -58,7 +103,7 @@ for t = iSpiralTrajArray
         'scheme3D', scheme3DArray{t}, ...
         'nPlanesPerShot', nPlanesPerShotArray(t), ...
         'nInterleaves', nIlArray(t), ...
-        'verbose', 1, ...
+        'verbose', 0, ...
         'idSubject', idSubject, ...
         'idGradientFolder', idArray(t), ...
         'trajectoryType', trajTypeArray{t}, ...
@@ -68,20 +113,15 @@ for t = iSpiralTrajArray
         'directionSpiral', trajDirArray{t}, ...
         'doFullSampling', false, ...
         'doDetermineParametersFromIdGradientFolder', false, ...
-        'pathCode', pathCodeTrajGen, ...
-        'pathData', pathData, ...
+        'pathCode', paths.code.traj_generation, ...
+        'pathData', paths.data, ...
         'interleafOrder', 'R1', ...
         'isBinary',0,...
         'nZeroFillEnd',0);
     % copy created gradient some to easily shareable location
-    fileGradientIn = fullfile(pathData, idSubject, num2str(id), 'gradients.txt');
-    fileGradientOut = fullfile(pathExport, sprintf('gradients%d.txt',id));
+    fileGradientIn = fullfile(paths.export, num2str(id), 'gradients.txt');
+    fileGradientOut = fullfile(paths.export_single_folder, sprintf('gradients%d.txt',id));
     copyfile(fileGradientIn, fileGradientOut);
-    % save png figure as well
-    fileGradientPic = fullfile(pathExport, sprintf('gradients%d.png', id));
-    fhArray = get(0, 'Children');
-    handleGradientPic = fhArray(2); % 2nd last figure is traj/grad/slew plot
-    saveas(handleGradientPic, fileGradientPic);
 end
 
 
@@ -96,7 +136,7 @@ nExtraEchoes = trajDirArray;
 % a specific meaning for EPI, rather: delta_TE
 
 
-for t = iEpiTrajArray
+for t = iEpiTrajArray([[2:5:end] [3:5:end]])
 
     % echo-spacing different for different scans...
     switch idArray(t)
@@ -118,8 +158,8 @@ for t = iEpiTrajArray
         'nPlanesPerShot', nPlanesPerShotArray(t), ...
         'maxG', maxGArray(t), 'maxSlewRate', maxSrArray(t), ...
         'interleaves', nIlArray(t), ...
-        'vis_verbose', 1, ...
-        'savedir', pathData, ...
+        'vis_verbose', 0, ...
+        'savedir', paths.data, ...
         'n_zerofill_samples', 0, ...
         'n_extra_echoes_ffe', str2double(nExtraEchoes{t}), ...
         'delta_TE', repmat(delta_TE, 1, str2double(nExtraEchoes{t})));
