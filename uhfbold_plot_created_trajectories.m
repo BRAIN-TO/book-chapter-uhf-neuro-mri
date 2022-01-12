@@ -19,7 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 doSavePlot = true;
-idTrajArray = idArray([iEpiTrajArray([[2:5:end] [3:5:end]]) iSpiralTrajArray([[2:5:end] [3:5:end]]) ])%37:192;
+idTrajArray = 1%idArray([iEpiTrajArray([[2:5:end] [3:5:end]]) iSpiralTrajArray([[2:5:end] [3:5:end]]) ])%37:192;
 
 paths = uhfbold_get_paths();
 
@@ -44,7 +44,8 @@ for idTraj = idTrajArray
     [fh,hs, data] = plot_k(k, 'dt', dt, 'gmax', gmax, 'smax', smax);
     set(fh, 'Name', sprintf('Traj %04d', idTraj));
     if doSavePlot
-        save_plot_publication(fh, paths.figures, [1]);
+      %  save_plot_publication(fh, paths.figures, [1]);
+        save_plot_publication(fh, paths.figures, [2]);
         pause(1);
         close(fh);
     end

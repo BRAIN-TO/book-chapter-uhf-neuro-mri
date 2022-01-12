@@ -30,6 +30,7 @@ paths.code.analysis = fullfile(paths.code.root, 'book-chapter-uhf-neuro-mri');
 paths.code.utils = 'C:\Users\kasperla\Documents\Code\BRAIN-To\matlab-utils';
 paths.code.spm = 'C:\Users\kasperla\Documents\Code\spm12';
 paths.code.uniqc = 'C:\Users\kasperla\Documents\Code\uniqc-code';
+paths.code.export_fig = 'C:\Users\kasperla\Documents\Code\BRAIN-To\export_fig';
 paths.code.traj_generation = 'C:\Users\kasperla\Documents\Code\Recon\utils\nominalTrajectory';
 paths.code.recon = 'C:\Users\kasperla\Documents\Code\Recon';
 

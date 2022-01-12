@@ -50,7 +50,7 @@ end
 
 for iFig = 1:nFigs
     currentFig = fh(iFig);
-    stringTitle = str2fn(get(currentFig, 'Name'));
+    stringTitle = tapas_uniqc_str2fn(get(currentFig, 'Name'));
     
     if saveAsPng
         currentFig.Visible = 'off';

@@ -21,6 +21,7 @@ function paths = uhfbold_setup_paths()
 
 paths = uhfbold_get_paths();
 addpath(genpath(paths.code.utils));
+addpath(genpath(paths.code.export_fig));
 addpath(genpath(paths.code.uniqc));
 addpath(paths.code.spm);
 addpath(genpath(paths.code.analysis));
