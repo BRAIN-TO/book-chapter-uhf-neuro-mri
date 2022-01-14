@@ -14,26 +14,33 @@
 %   serial mode (higher voltage, higher SR)
 %   parallel mode (higher current, higher Gmax)
 
-idSubject = 'UHFBOLD'; % 'SYNAPTIVE'; %'UHFBOLD';
+% NOTE: adjust in main_create_smooth_readgrad_FFE
+% HACK for strong max gradients to avoid freq undersampling limitation of
+% gradient
+%dknyquist_x = 2*pi/args.FOV(1);
+%args.sc.dwell_acq = dknyquist_x/(args.sc.gamma_1H*args.maxG);
+
+idSubject = 'SYNAPTIVE'; % 'SYNAPTIVE'; %'UHFBOLD';
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
 iEpiTrajArray = [3];
 iSpiralTrajArray = [4];
 
 doUseGradientFile = false; % if false, take array population from arrays below
 
-resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
 RArray = [1 2 3 4];
 
 switch idSubject
     case 'UHFBOLD'
+        resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 200]*1e-3;
         SRmaxArray = [200 200 1200 600];
     case 'SYNAPTIVE'
+        resArray = [3 2.5 2 1.5 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 100 200]*1e-3;
         SRmaxArray = [200 200 400 1200 600];
 end
 
-paths = uhfbold_setup_paths();
+paths = uhfbold_setup_paths(idSubject);
 
 % where to write down the gradient files for easy access later on
 [~,~] = mkdir(paths.export_single_folder);
@@ -88,11 +95,12 @@ switch upper(vendor)
     case 'PHILIPS'
         dtGradient = 6.4e-6;
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Create Spirals
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for t = iSpiralTrajArray([[2:5:end] [3:5:end]])
+for t = []%iSpiralTrajArray
     id = idArray(t);
     create_matched_filter_spiral(...
         'dtGradient', dtGradient, ...
@@ -136,7 +144,7 @@ nExtraEchoes = trajDirArray;
 % a specific meaning for EPI, rather: delta_TE
 
 
-for t = iEpiTrajArray([[2:5:end] [3:5:end]])
+for t = iEpiTrajArray(91:end)
 
     % echo-spacing different for different scans...
     switch idArray(t)
@@ -144,7 +152,6 @@ for t = iEpiTrajArray([[2:5:end] [3:5:end]])
         otherwise
             delta_TE = 0;
     end
-    
     main_create_smooth_readgrad_FFE(...
         'dtGradient', dtGradient, ...
         'mp_switch', false, ...

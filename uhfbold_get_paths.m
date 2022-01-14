@@ -1,4 +1,4 @@
-function paths = uhfbold_get_paths()
+function paths = uhfbold_get_paths(idSubject)
 % Define all paths for code related to UHF Neuro BOLD Acq/Phys book chapter
 %
 %   paths = uhfbold_get_paths()
@@ -19,12 +19,14 @@ function paths = uhfbold_get_paths()
 % Please see LICENSE file for how to use items in this repository.
 %
 
-idSubject = 'UHFBOLD'; 'SYNAPTIVE'; %'UHFBOLD'
+if nargin < 1
+    idSubject = 'UHFBOLD'; 'SYNAPTIVE'; %'UHFBOLD'
+end
 
 paths.project = 'C:\Users\kasperla\UHN\Brain-TO - BookChapterUltraHighFieldNeuroMRI - BookChapterUltraHighFieldNeuroMRI';
 paths.data = fullfile(paths.project, 'data');
 paths.results = fullfile(paths.project, 'results');
-paths.figures = fullfile(paths.results, 'figures');
+paths.figures = fullfile(paths.results, 'figures', idSubject);
 paths.code.root = fullfile(paths.project, 'code');
 paths.code.analysis = fullfile(paths.code.root, 'book-chapter-uhf-neuro-mri');
 paths.code.utils = 'C:\Users\kasperla\Documents\Code\BRAIN-To\matlab-utils';

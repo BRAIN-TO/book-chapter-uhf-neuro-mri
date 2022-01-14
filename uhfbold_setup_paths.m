@@ -1,4 +1,4 @@
-function paths = uhfbold_setup_paths()
+function paths = uhfbold_setup_paths(idSubject)
 % sets up paths for book chapter analysis/visualization
 %
 %  paths = uhfbold_setup_paths
@@ -19,7 +19,12 @@ function paths = uhfbold_setup_paths()
 % Please see LICENSE file for how to use items in this repository.
 %
 
-paths = uhfbold_get_paths();
+if nargin < 1
+    idSubject = 'UHFBOLD';
+end
+    
+
+paths = uhfbold_get_paths(idSubject);
 addpath(genpath(paths.code.utils));
 addpath(genpath(paths.code.export_fig));
 addpath(genpath(paths.code.uniqc));

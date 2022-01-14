@@ -20,19 +20,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 doSavePlots = true;
 
-paths = uhfbold_get_paths();
 
-%save('acqDurationEPISpiral_msArray', ...
-% 'acqDuration_msArray', 'maxGArray', 'maxSrArray', 'rPArray', 'dxMArray', 'iEpiTrajArray', 'iSpiralTrajArray')
+idSubject = 'SYNAPTIVE';
+paths = uhfbold_get_paths(idSubject);
+
+%from:
+%save('acqDurationEPISpiral_msArray', 'acqDuration_msArray', 'maxGArray', 'maxSrArray', 'rPArray', 'dxMArray', 'iEpiTrajArray', 'iSpiralTrajArray', 'GmaxArray', 'SRmaxArray', 'resArray')
 
 load(fullfile(paths.results, 'acqDurationEPISpiral_msArray.mat'));
 
-GmaxArray = [40 80 100 200]*1e-3;
-SRmaxArray = [200 200 1200 600];
+if ~exist('GmaxArray', 'var')
+    GmaxArray = [40 80 100 200]*1e-3;
+    SRmaxArray = [200 200 1200 600];
+end
 
 set(0, 'DefaultFigureWindowStyle', 'docked')
 
-for idGradSystem = 1:4
+for idGradSystem = 1:5
     Gmax = GmaxArray(idGradSystem);
     SRmax = SRmaxArray(idGradSystem);
     
@@ -41,7 +45,7 @@ for idGradSystem = 1:4
     x = 1000*unique(dxMArray(idxArrayTraj));
     
     for R = 1:4
-        idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax), idxArrayTraj);
+        idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax & maxSrArray(:)==SRmax), idxArrayTraj);
         y(:,R) = acqDuration_msArray(idxArray);
         stringLegend{R} = sprintf('EPI R = %d', R);
     end
@@ -64,7 +68,7 @@ for idGradSystem = 1:4
     x2 = 1000*unique(dxMArray(idxArrayTraj));
     
     for R = 1:4
-        idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax), idxArrayTraj);
+        idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax & maxSrArray(:)==SRmax), idxArrayTraj);
         y2(:,R) = acqDuration_msArray(idxArray); % highest resolution first
         stringLegend{R+4} = sprintf('Spiral R = %d', R);
     end
@@ -83,6 +87,7 @@ for idGradSystem = 1:4
     fhArray(idGradSystem) = fh;
 end
 
+%% save 
 if doSavePlots
     save_plot_publication(fhArray, paths.figures, [1]);
 end
