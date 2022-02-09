@@ -9,7 +9,7 @@
 % exploring the following:
 % resolution (cartesian): 3 2 1 0.75 0.5 0.25(?) mm
 % trajetories: EPI, 2D Spiral
-% gradient system: standard, high end clinical, 
+% gradient system: standard, high end clinical,
 % insert gradient (Weiger et al., 2018, MRM)
 %   serial mode (higher voltage, higher SR)
 %   parallel mode (higher current, higher Gmax)
@@ -20,24 +20,40 @@
 %dknyquist_x = 2*pi/args.FOV(1);
 %args.sc.dwell_acq = dknyquist_x/(args.sc.gamma_1H*args.maxG);
 
-idSubject = 'SYNAPTIVE'; % 'SYNAPTIVE'; %'UHFBOLD';
+idSubject = 'MAXTAQ50100R4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
 iEpiTrajArray = [3];
 iSpiralTrajArray = [4];
 
 doUseGradientFile = false; % if false, take array population from arrays below
 
-RArray = [1 2 3 4];
 
 switch idSubject
-    case 'UHFBOLD'
-        resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
-        GmaxArray = [40 80 100 200]*1e-3;
-        SRmaxArray = [200 200 1200 600];
+    case 'MAXTAQ50100R4'
+        RArray = [4];
+        resArray = [0.8 0.85 0.9 0.95]*1e-3; % for EPI 0.95 w/ 40, 0.85 w/ 80 mT/m; for spiral 0.85 w/ 40 mT/m
+        GmaxArray = [40]*1e-3;
+        SRmaxArray = [200];
+    case 'MAXTAQ50100'
+        RArray = [1];
+        resArray = [2.2 2.15 2.1 1.4 1.35 1.3 1.2]*1e-3;
+        GmaxArray = [80]*1e-3;
+        SRmaxArray = [200];
+    case 'MAXTAQ50100INSERT'
+        RArray = [1];
+        resArray = [1.4 1.3 1.2 0.8 0.9]*1e-3;
+        GmaxArray = [100]*1e-3;
+        SRmaxArray = [1200];
     case 'SYNAPTIVE'
+        RArray = [1 2 3 4];
         resArray = [3 2.5 2 1.5 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 100 200]*1e-3;
         SRmaxArray = [200 200 400 1200 600];
+    case 'UHFBOLD'
+        RArray = [1 2 3 4];
+        resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
+        GmaxArray = [40 80 100 200]*1e-3;
+        SRmaxArray = [200 200 1200 600];
 end
 
 paths = uhfbold_setup_paths(idSubject);
@@ -45,7 +61,7 @@ paths = uhfbold_setup_paths(idSubject);
 % where to write down the gradient files for easy access later on
 [~,~] = mkdir(paths.export_single_folder);
 
-if doUseGradientFile    
+if doUseGradientFile
     fileNameIndex = fullfile(paths.code.analysis, ...
         sprintf('index_gradient_files_%s.m', idSubject));
     
@@ -61,7 +77,7 @@ else
     
     iEpiTrajArray = 1:2:nTrajs;
     iSpiralTrajArray = 2:2:nTrajs;
-
+    
     FOV = 220e-3;
     
     fovMArray(1:nTrajs) = FOV;
@@ -100,7 +116,7 @@ end
 %% Create Spirals
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for t = []%iSpiralTrajArray
+for t = iSpiralTrajArray
     id = idArray(t);
     create_matched_filter_spiral(...
         'dtGradient', dtGradient, ...
@@ -144,8 +160,8 @@ nExtraEchoes = trajDirArray;
 % a specific meaning for EPI, rather: delta_TE
 
 
-for t = iEpiTrajArray(91:end)
-
+for t = iEpiTrajArray
+    
     % echo-spacing different for different scans...
     switch idArray(t)
         case {999}

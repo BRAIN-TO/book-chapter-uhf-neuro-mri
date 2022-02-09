@@ -21,7 +21,7 @@
 doSavePlot = true;
 idTrajArray = idArray;
 
-idSubject = 'SYNAPTIVE';
+idSubject = 'MAXTAQ50100R4';
 paths = uhfbold_get_paths(idSubject);
 
 [~,~] = mkdir(paths.figures);
