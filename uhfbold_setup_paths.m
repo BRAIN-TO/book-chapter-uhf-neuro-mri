@@ -32,5 +32,5 @@ addpath(paths.code.spm);
 addpath(genpath(paths.code.analysis));
 
 % add paths for traj creation
-addpath(genpath(paths.code.recon));
 addpath(genpath(paths.code.traj_generation));
+addpath(genpath(paths.code.traj_utils));

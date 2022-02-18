@@ -53,7 +53,7 @@ for iFig = 1:nFigs
     stringTitle = tapas_uniqc_str2fn(get(currentFig, 'Name'));
     
     if saveAsPng
-        currentFig.Visible = 'off';
+        set(currentFig, 'Visible', 'off');
         windowStyle = get(currentFig, 'WindowStyle');
         currPos = get(currentFig, 'Position');
         set(currentFig, 'WindowStyle', 'normal');
@@ -66,7 +66,7 @@ for iFig = 1:nFigs
             '-png',  '-transparent', '-a1', '-q101', ...
             currentFig);
         set(currentFig, 'WindowStyle', windowStyle);
-        currentFig.Visible = 'on';  
+        set(currentFig, 'Visible', 'on');
     end
     
     if saveAsFig

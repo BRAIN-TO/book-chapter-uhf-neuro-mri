@@ -1,13 +1,13 @@
-% Script spidi_plot_nominal_trajectories
+% Script uhfbold_plot_created_trajectories
 % Plots nominal trajectories created by gradient creation
 %
-%  spidi_plot_nominal_trajectories
+%  uhfbold_plot_created_trajectories
 %
 %
 %   See also
 
 % Author:   Lars Kasper
-% Created:  2020-11-14
+% Created:  2022-01-07
 % Copyright (C) 2020 BRAIN-TO Lab, Techna Institute, UHN Toronto, Canada
 %
 % Please see LICENSE file for how to use items in this repository.
@@ -18,10 +18,10 @@
 %% Load trajectory from gradients*.txt file and plot
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-doSavePlot = true;
+doSavePlot = false;
 idTrajArray = idArray;
 
-idSubject = 'MAXTAQ50100R4';
+idSubject = 'MAXTAQ50100INSERTR4';
 paths = uhfbold_get_paths(idSubject);
 
 [~,~] = mkdir(paths.figures);

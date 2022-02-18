@@ -1,10 +1,9 @@
-% Script main_create_trajs
+% Script uhfbold_create_epi_spiral_trajectories
 % Creates spiral & cartesian (FFE, EPI, multi-echo) trajectories from index file
 %
-% See also create_figure_trajectory_gradients
 %
 % Author: Lars Kasper
-% Created: 2020-02-13
+% Created: 2022-01-07
 
 % exploring the following:
 % resolution (cartesian): 3 2 1 0.75 0.5 0.25(?) mm
@@ -20,7 +19,7 @@
 %dknyquist_x = 2*pi/args.FOV(1);
 %args.sc.dwell_acq = dknyquist_x/(args.sc.gamma_1H*args.maxG);
 
-idSubject = 'MAXTAQ50100R4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
+idSubject = 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
 iEpiTrajArray = [3];
 iSpiralTrajArray = [4];
@@ -31,8 +30,10 @@ doUseGradientFile = false; % if false, take array population from arrays below
 switch idSubject
     case 'MAXTAQ50100R4'
         RArray = [4];
-        resArray = [0.8 0.85 0.9 0.95]*1e-3; % for EPI 0.95 w/ 40, 0.85 w/ 80 mT/m; for spiral 0.85 w/ 40 mT/m
-        GmaxArray = [40]*1e-3;
+        %50ms TAQ: for EPI 0.95 w/ 40, 0.85 w/ 80 mT/m; for spiral 0.85 w/ 40 mT/m
+        %100 ms TAQ: for spiral 0.5@80mT/m, for EPI 0.55@80mT/m
+        resArray = [0.8 0.85 0.9 0.95 0.45 0.5 0.55 0.6]*1e-3; 
+        GmaxArray = [80]*1e-3;
         SRmaxArray = [200];
     case 'MAXTAQ50100'
         RArray = [1];
@@ -42,6 +43,12 @@ switch idSubject
     case 'MAXTAQ50100INSERT'
         RArray = [1];
         resArray = [1.4 1.3 1.2 0.8 0.9]*1e-3;
+        GmaxArray = [100]*1e-3;
+        SRmaxArray = [1200];
+    case 'MAXTAQ50100INSERTR4'
+        %50ms TAQ: for EPI 0.575 mm, for spiral 0.525 mm
+        RArray = [4];
+        resArray = [0.5 0.525 0.55 0.575]*1e-3;
         GmaxArray = [100]*1e-3;
         SRmaxArray = [1200];
     case 'SYNAPTIVE'
@@ -137,7 +144,6 @@ for t = iSpiralTrajArray
         'directionSpiral', trajDirArray{t}, ...
         'doFullSampling', false, ...
         'doDetermineParametersFromIdGradientFolder', false, ...
-        'pathCode', paths.code.traj_generation, ...
         'pathData', paths.data, ...
         'interleafOrder', 'R1', ...
         'isBinary',0,...

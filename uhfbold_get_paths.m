@@ -33,8 +33,11 @@ paths.code.utils = 'C:\Users\kasperla\Documents\Code\BRAIN-To\matlab-utils';
 paths.code.spm = 'C:\Users\kasperla\Documents\Code\spm12';
 paths.code.uniqc = 'C:\Users\kasperla\Documents\Code\uniqc-code';
 paths.code.export_fig = 'C:\Users\kasperla\Documents\Code\BRAIN-To\export_fig';
-paths.code.traj_generation = 'C:\Users\kasperla\Documents\Code\Recon\utils\nominalTrajectory';
-paths.code.recon = 'C:\Users\kasperla\Documents\Code\Recon';
+
+% NOTE: Contact Lars Kasper if you are interested to get the following code
+% folders
+paths.code.traj_generation = 'C:\Users\kasperla\Documents\Code\Recon7\trunk\utils\nominalTrajectory';
+paths.code.traj_utils = 'C:\Users\kasperla\Documents\Code\Recon7\trunk\utils\nominalTrajectory\utils';
 
 paths.export = fullfile(paths.data, idSubject);
 % put all gradient files in single folder for easier access

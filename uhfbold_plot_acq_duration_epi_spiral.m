@@ -36,7 +36,10 @@ end
 
 set(0, 'DefaultFigureWindowStyle', 'docked')
 
-for idGradSystem = 1:5
+fhArray = [];
+
+%% Plot EPI spiral durations for different gradient systems
+for idGradSystem = [] %1:5
     Gmax = GmaxArray(idGradSystem);
     SRmax = SRmaxArray(idGradSystem);
     
@@ -87,7 +90,97 @@ for idGradSystem = 1:5
     fhArray(idGradSystem) = fh;
 end
 
-%% save 
+%% Plot Summary EPI/Spiral R=1 &4 for all gradient systems
+gradSystemPlotArray = [2 4 5];%[1 2 4 5];
+RPlotArray = [1 4];
+trajPlotArray = [1 2];
+trajPlotNames = {'EPI', 'Spiral'}
+gradSystemNames = {'Standard Whole Body Gradient', ...
+    'Performance Whole Body Gradient', 'Commercial (Synaptive) Head Gradient', ...
+    'Performance Head Gradient (serial mode)', ...
+    'Performance Head Gradient (parallel mode)'
+    };
+
+
+colorArray = [
+    0    0.4470    0.7410
+    0.8500    0.3250    0.0980
+    0.9290    0.6940    0.1250
+    0.4940    0.1840    0.5560
+    0.4660    0.6740    0.1880
+    0.3010    0.7450    0.9330
+    0.6350    0.0780    0.1840
+    ];
+
+lineStyleArray = {
+    '-'
+    '--'
+    };
+
+markerArray = {
+    'none'
+    'd'
+    '+'
+    'x'
+    'o'
+    };
+
+
+iPlot = 0;
+% set up figure
+fh = figure;
+set(fh, 'DefaultAxesFontsize', 16);
+for idGradSystem = gradSystemPlotArray
+    for R = RPlotArray
+        for idTraj = trajPlotArray
+            
+            
+            iPlot = iPlot+1;
+            
+            Gmax = GmaxArray(idGradSystem);
+            SRmax = SRmaxArray(idGradSystem);
+            
+            switch idTraj
+                case 1
+                    idxArrayTraj = iEpiTrajArray;
+                case 2
+                    idxArrayTraj = iSpiralTrajArray;
+            end
+            
+            x(:,iPlot) = 1000*unique(dxMArray(idxArrayTraj));
+            
+            
+            idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax & maxSrArray(:)==SRmax), idxArrayTraj);
+            y(:,iPlot) = fliplr(acqDuration_msArray(idxArray)); % highest resolution first
+            stringLegend{iPlot} = sprintf('%s R = %d (G_{max} = %3.0f mT/m, SR_{max} = %4.0f T/m/s)', ...
+                trajPlotNames{idTraj}, R, ...
+                1000*Gmax, SRmax);
+%             stringLegend{iPlot} = sprintf('%s R = %d (%s, G_{max} = %3.0f mT/m, SR_{max} = %4.0f T/m/s)', ...
+%                 trajPlotNames{idTraj}, R, gradSystemNames{idGradSystem}, ...
+%                 1000*Gmax, SRmax);
+%             
+            hp(iPlot) = plot(x(:,iPlot),y(:,iPlot));
+            hp(iPlot).Marker = markerArray{R};
+            hp(iPlot).MarkerSize = 12;
+            hp(iPlot).Color = colorArray(idGradSystem,:);
+            hp(iPlot).LineStyle = lineStyleArray{idTraj};
+            
+            hold on;
+        end
+    end
+end
+set(hp, 'LineWidth', 2);
+ylim([0 200]);
+xlabel('Resolution (mm)');
+ylabel('Readout duration (ms)');
+grid on
+legend(stringLegend);
+stringTitle = sprintf('EPI/Spiral fully/undersampled on different gradient systems');
+title(stringTitle)
+set(fh, 'Name', ['Readout Durations ' stringTitle]);
+fhArray(end+1) = fh;
+
+%% save Plots
 if doSavePlots
     save_plot_publication(fhArray, paths.figures, [1]);
 end
