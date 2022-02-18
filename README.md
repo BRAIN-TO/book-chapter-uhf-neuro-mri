@@ -28,7 +28,7 @@ constraints specified for the gradient system.
 Lustig, M., Kim, S.-J., Pauly, J.M., 2008. 
 A Fast Method for Designing Time-Optimal Gradient Waveforms for Arbitrary 
 k-Space Trajectories. 
-IEEE Transactions on Medical Imaging 27, 866–873. 
+IEEE Transactions on Medical Imaging 27, 866â€“873. 
 https://doi.org/10.1109/TMI.2008.922699
 
 
@@ -49,5 +49,5 @@ https://doi.org/10.1109/TMI.2008.922699
         save('acqDurationEPISpiral_msArray', 'acqDuration_msArray', ...
         'maxGArray', 'maxSrArray', 'rPArray', 'dxMArray', 'iEpiTrajArray', ...
         'iSpiralTrajArray', 'GmaxArray', 'SRmaxArray', 'resArray')
-     ```
+      ```
     - Then, run `uhfbold_plot_acq_duration_epi_spiral`
