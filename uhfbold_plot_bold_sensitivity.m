@@ -64,7 +64,7 @@ TEArray = (0:1:150); % in ms
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot BOLD Sensitivity with borders for min/max sensitivity ranges
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-stringTitle = 'BOLD Sensitivity for varying field strength and TE)';
+stringTitle = 'BOLD Sensitivity for varying field strength and TE';
 fh = figure('Name', stringTitle);
 set(fh, 'DefaultAxesFontsize', 16);
 BS = get_bold_sensitivity(TEArray, T2starArray);
@@ -107,13 +107,58 @@ for iT2star = 1:numel(T2starArray)
      
 end
 
-set(hl, 'LineStyle', '--', 'LineWidth', 2)
+set(hl, 'LineStyle', '-.', 'LineWidth', 2)
 legend(legendArray)
 title(stringTitle);
+fhArray(1) = fh;
+% TODO: Plot rectangles for duration, put T2* values on x axis
 
+%% BOLD Sensitivity as Difference in T2*,
+% R2* values from  Table 2 in 
+% van der Zwaag, W., Francis, S., Head, K., Peters, A.,
+% Gowland, P., Morris, P., Bowtell, R., 2009. fMRI at 1.5, 3 and 7 T:
+% Characterising BOLD signal changes. NeuroImage 47, 1425–1434.
+% https://doi.org/10.1016/j.neuroimage.2009.05.015 
+
+% 1.5 T, 3 T, 7 T
+R2star0 =     [11.6 18.1 30.8];
+deltaR2star = [0.51 0.98 2.55];
+stringTitle = 'T2* Signal and Differences (BOLD Sensitivity) for varying TE';
+fh = figure('Name', stringTitle);
+set(fh, 'DefaultAxesFontsize', 16);
+
+% match colors to other plot, correspondence via field strength
+matchingLineColors = usedLineColors([3 1 2]);
+
+for iT2star = 2:3
+    Sbase= exp(-TEArray*1e-3*(R2star0(iT2star)+deltaR2star(iT2star)))';
+    Sactive = exp(-TEArray*1e-3*R2star0(iT2star))';
+    BSasDiff = abs(Sactive - Sbase); % absolute value because here only T2* changes are considered, but flow/overcompensation
+    
+    % find BS optimum
+    funBSDiffSquare = @(TEArray) -(exp(-TEArray*1e-3*R2star0(iT2star)) - ...
+        exp(-TEArray*1e-3*(R2star0(iT2star)+deltaR2star(iT2star)))).^2
+    
+    TEopt(iT2star) = fminunc(funBSDiffSquare, 1000/(R2star0(iT2star)+deltaR2star(iT2star)));
+    
+    % plot signal and Bold sensitivity, adjust line styles
+    hp2(:,iT2star) = plot(TEArray, [Sbase, Sactive, 10*BSasDiff, BSasDiff./Sbase]); hold on;
+    set(hp2(:,iT2star), 'Color', matchingLineColors{iT2star});
+    set(hp2(:,iT2star), 'LineWidth', 2);
+    hp2(1,iT2star).LineStyle = '--';
+    hp2(3,iT2star).LineStyle = '-.';
+    hp2(4,iT2star).LineStyle = ':';
+    hl(iT2star) = line(TEopt(iT2star)*[1, 1], [0 10*sqrt(abs(funBSDiffSquare(TEopt(iT2star))))]);
+    set(hl(iT2star), 'LineStyle', '-.', 'LineWidth', 2, 'Color', matchingLineColors{iT2star});
+    legend('baseline T_2^*', 'activated T_2^*', 'difference x 10 (BOLD sensitivity)', ...
+        'relative signal change (\Delta S / S)');
+end
+title(stringTitle);
+xlabel('TE (ms)');
+ylabel('Bold Sensitivity (a.u.)');
+fhArray(2) = fh;
 
 %% save Plots
-fhArray = fh;
 if doSavePlots
     save_plot_publication(fhArray, paths.figures, [1]);
 end

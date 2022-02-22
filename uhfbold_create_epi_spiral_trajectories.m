@@ -19,7 +19,7 @@
 %dknyquist_x = 2*pi/args.FOV(1);
 %args.sc.dwell_acq = dknyquist_x/(args.sc.gamma_1H*args.maxG);
 
-idSubject = 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
+idSubject = 'FEINBERGATRON'; % 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
 iEpiTrajArray = [3];
 iSpiralTrajArray = [4];
@@ -61,6 +61,11 @@ switch idSubject
         resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 200]*1e-3;
         SRmaxArray = [200 200 1200 600];
+    case 'FEINBERGATRON'
+        RArray = [1 2 3 4];
+        resArray = [3 2.5 2 1.5 1 0.75 0.5 0.25]*1e-3;
+        GmaxArray = [40 80 100 100 200]*1e-3;
+        SRmaxArray = [200 200 400 1200 900];
 end
 
 paths = uhfbold_setup_paths(idSubject);
