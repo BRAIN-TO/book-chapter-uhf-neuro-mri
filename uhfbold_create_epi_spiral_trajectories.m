@@ -21,6 +21,7 @@
 
 idSubject = 'FEINBERGATRON'; % 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
+
 iEpiTrajArray = [3];
 iSpiralTrajArray = [4];
 
@@ -61,7 +62,9 @@ switch idSubject
         resArray = [3 2 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 200]*1e-3;
         SRmaxArray = [200 200 1200 600];
-    case 'FEINBERGATRON'
+    case 'FEINBERGATRON' 
+        % as SYNAPTIVE, but replace parallel mode (max Gmax) of 
+        % Weiger et al., 2018 with Feinberg et al., 2021 specs, (higher SR)
         RArray = [1 2 3 4];
         resArray = [3 2.5 2 1.5 1 0.75 0.5 0.25]*1e-3;
         GmaxArray = [40 80 100 100 200]*1e-3;

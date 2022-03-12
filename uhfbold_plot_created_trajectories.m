@@ -18,10 +18,10 @@
 %% Load trajectory from gradients*.txt file and plot
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-doSavePlot = false;
+doSavePlot = true;
 idTrajArray = idArray;
 
-idSubject = 'MAXTAQ50100INSERTR4';
+idSubject = 'FEINBERGATRON'; % see ufbpld_create_epi_spiral_trajectories for other options
 paths = uhfbold_get_paths(idSubject);
 
 [~,~] = mkdir(paths.figures);
