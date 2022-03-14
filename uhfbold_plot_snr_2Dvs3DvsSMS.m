@@ -38,6 +38,7 @@ FOVz = 120;%100%120;
 idSubject = 'FEINBERGATRON';
 paths = uhfbold_get_paths(idSubject);
 
+doPlotDirectRelativeSnr3DSMSStirnberg = false; %for comparison, should be the same
 doSavePlots = true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,6 +63,7 @@ SNR_2D = @(TRvol,T1) (Rz*sqrt(tanh(TRvol/(2*T1))));
 %% Consistent with Stirnberg, TRvol is based on TR from undersampled experiment TR2D/Rz
 SNR_3D = @(TRvol,T1,nSlices, Rz) (sqrt(nSlices.*tanh(TRvol.*Rz./(nSlices*2*T1))));
 SNR_SMS = @(TRvol,T1,nSlices, Rz) (sqrt(Rz.*tanh(TRvol/(2*T1))));
+% direct formula from Stirnberg ISMRM Educational 2020
 rRSNR_3DvsSMS = @(TRvol,T1,nSlices, Rz) (sqrt(nSlices./Rz).*sqrt(tanh(TRvol./(2*T1)*Rz./nSlices)./tanh(TRvol./(2*T1))));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot 2D vs SMS SNR
@@ -112,7 +114,7 @@ fh = figure('Name', stringTitle{1});
 set(fh, 'DefaultAxesFontsize', 16);
 
 nSlices = (40:12000)';
-TRvol = nSlices*TR/Rz;
+TRvol = nSlices*TR/Rz; % Volume TR of undersampled case!
 
 % comparison plots of formulas...exp and tanh equivalent!
 % x = TRvol;
@@ -132,7 +134,13 @@ hp(2).Color = [0    0.4470    0.7410];
 hp(3).Color = [0.8500    0.3250    0.0980];
 
 set(hp, 'LineWidth', 2);
+
+if doPlotDirectRelativeSnr3DSMSStirnberg
 hp2 = plot(x, [y2./y1, y3./y1, y3./y2, y4]);
+else
+hp2 = plot(x, [y2./y1, y3./y1, y3./y2]);
+end    
+
 xlim([0, max(x)]);
 ylim([0.5 3.5])
 set(hp2, 'LineWidth', 2, 'LineStyle', '-.');
@@ -142,7 +150,12 @@ hp2(1).Color = hp(2).Color;
 hp2(2).Color = hp(3).Color;
 hp2(3).Color = [0.9290    0.6940    0.1250];
 
-legend('SNR 2D', 'SNR SMS', 'SNR 3D', 'SNR SMS/2D', 'SNR 3D/2D', 'SNR 3D/SMS', 'direct rSNR 3D/SMS'); 
+if doPlotDirectRelativeSnr3DSMSStirnberg
+    legend('SNR 2D', 'SNR SMS', 'SNR 3D', 'SNR SMS/2D', 'SNR 3D/2D', 'SNR 3D/SMS', 'direct rSNR 3D/SMS');
+else
+    legend('SNR 2D', 'SNR SMS', 'SNR 3D', 'SNR SMS/2D', 'SNR 3D/2D', 'SNR 3D/SMS');
+end
+
 xlabel('Resolution (mm)');
 ylabel('Relative SNR');
 grid on
