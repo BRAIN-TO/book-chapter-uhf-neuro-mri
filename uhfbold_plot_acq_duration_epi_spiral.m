@@ -41,7 +41,7 @@ if ~exist('GmaxArray', 'var')
     SRmaxArray = [200 200 1200 600];
 end
 
-set(0, 'DefaultFigureWindowStyle', 'docked')
+% set(0, 'DefaultFigureWindowStyle', 'docked')
 
 fhArray = [];
 
@@ -117,10 +117,10 @@ gradSystemNames = {
 
 colorArray = [
     0    0.4470    0.7410
-    0.8500    0.3250    0.0980
+    0 0 0
     0.9290    0.6940    0.1250
-    0.4940    0.1840    0.5560
-    0.4660    0.6740    0.1880
+    0    0.4470    0.7410
+    0.8500    0.3250    0.0980
     0.3010    0.7450    0.9330
     0.6350    0.0780    0.1840
     ];
@@ -169,9 +169,18 @@ for idGradSystem = gradSystemPlotArray
             
             idxArray = intersect(find(rPArray(:)==R & maxGArray(:)==Gmax & maxSrArray(:)==SRmax), idxArrayTraj);
             y(:,iPlot) = fliplr(acqDuration_msArray(idxArray)); % highest resolution first
-            stringLegend{iPlot} = sprintf('%s R = %d (G_{max} = %3.0f mT/m, SR_{max} = %4.0f T/m/s)', ...
-                trajPlotNames{idTraj}, R, ...
-                1000*Gmax, SRmax);
+            switch idTraj
+                case 1
+                    stringLegend{iPlot} = sprintf('%s', ...
+                        trajPlotNames{idTraj})
+                case 2
+                    stringLegend{iPlot} = sprintf('%s    R = %d (Gradient %3d / %4d)', ...
+                        trajPlotNames{idTraj}, R, ...
+                        1000*Gmax, SRmax);
+%                     stringLegend{iPlot} = sprintf('%s    R = %d (G_{max} = %3.0f mT/m, SR_{max} = %4.0f T/m/s)', ...
+%                         trajPlotNames{idTraj}, R, ...
+%                         1000*Gmax, SRmax);
+             end
             %             stringLegend{iPlot} = sprintf('%s R = %d (%s, G_{max} = %3.0f mT/m, SR_{max} = %4.0f T/m/s)', ...
             %                 trajPlotNames{idTraj}, R, gradSystemNames{idGradSystem}, ...
             %                 1000*Gmax, SRmax);
@@ -191,10 +200,12 @@ ylim([0 200]);
 xlabel('Resolution (mm)');
 ylabel('Readout duration (ms)');
 grid on
-legend(stringLegend);
-stringTitle = sprintf('EPI/Spiral (with and without Undersampling) on Different Gradient Systems');
+legend([hp(1:2:end), hp(2:2:end)], stringLegend([1:2:end, 2:2:end]),  'NumColumns', 2);
+stringTitle = sprintf('Single Plane EPI/Spiral Duration on Different Gradient Systems');
 title(stringTitle)
 set(fh, 'Name', ['Readout Durations ' stringTitle]);
+fh.Position = [680   357   927   741];
+
 fhArray(end+1) = fh;
 
 %% save Plots

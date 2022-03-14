@@ -44,12 +44,13 @@ SNR_SMS = @(TRvol,T1,nSlices, Rz) (sqrt(Rz*tanh(TRvol/(Rz*2*T1))));
 %% Plot 2D vs SMS SNR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-stringTitle = sprintf('SNR 2D vs 3D Acquisition (T_1 = %4d ms, TR_{slice} = %2d ms, FOV_z = %3d mm)', ...
-    T1*1e3, TR*1e3, FOVz);
-fh = figure('Name', stringTitle);
+stringTitle = {'SNR 2D vs 3D Acquisition', ...
+    sprintf('(T_1 = %4d ms, TR_{slice} = %2d ms, FOV_z = %3d mm)', ...
+    T1*1e3, TR*1e3, FOVz)};
+fh = figure('Name', stringTitle{1});
 set(fh, 'DefaultAxesFontsize', 16);
 
-nSlices = (30:480)';
+nSlices = (40:12000)';
 TRvol = nSlices*TR;
 
 % comparison plots of formulas...exp and tanh equivalent!
@@ -64,12 +65,16 @@ x = FOVz./nSlices;
 y1 = SNR_2D_exp(TRvol, T1);
 y2 = SNR_3D(TRvol, T1, nSlices, Rz);
 hp = plot(x, [y1,y2, y2./y1]);
-xlim([min(x), max(x)]);
+xlim([0, max(x)]);
+ylim([0 3.5])
 set(hp, 'LineWidth', 2);
 legend('SNR 2D', 'SNR 3D', 'SNR 3D/2D'); 
 xlabel('Resolution (mm)');
 ylabel('Relative SNR');
 title(stringTitle)
+fh.Position = [680   508   866   590];
+grid on
+%fh.Children(1).Position = [ 0.5620    0.3969    0.3233    0.2017]; % legend
 fhArray(1) = fh;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,12 +82,13 @@ fhArray(1) = fh;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Rz = 4;
-stringTitle = sprintf('SNR 2D vs SMS vs 3D Acquisition (T_1 = %4d ms, TR_{slice} = %2d ms, FOV_z = %3d mm, R_z = %d)', ...
-    T1*1e3, TR*1e3, FOVz, Rz);
-fh = figure('Name', stringTitle);
+stringTitle = {'SNR 2D vs SMS vs 3D Acquisition', ...
+    sprintf('(T_1 = %4d ms, TR_{slice} = %2d ms, FOV_z = %3d mm, R_z = %d)', ...
+    T1*1e3, TR*1e3, FOVz, Rz)};
+fh = figure('Name', stringTitle{1});
 set(fh, 'DefaultAxesFontsize', 16);
 
-nSlices = (30:480)';
+nSlices = (40:12000)';
 TRvol = nSlices*TR;
 
 % comparison plots of formulas...exp and tanh equivalent!
@@ -103,7 +109,8 @@ hp(3).Color = [0.8500    0.3250    0.0980];
 
 set(hp, 'LineWidth', 2);
 hp2 = plot(x, [y2./y1, y3./y1, y3./y2]);
-xlim([min(x), max(x)]);
+xlim([0, max(x)]);
+ylim([0.5 3.5])
 set(hp2, 'LineWidth', 2, 'LineStyle', '-.');
 
 % match colors of ratios to numerator color
@@ -114,7 +121,12 @@ hp2(3).Color = [  0.9290    0.6940    0.1250];
 legend('SNR 2D', 'SNR SMS', 'SNR 3D', 'SNR SMS/2D', 'SNR 3D/2D', 'SNR 3D/SMS'); 
 xlabel('Resolution (mm)');
 ylabel('Relative SNR');
+grid on
 title(stringTitle)
+
+fh.Position = [680   508   866   590];
+%fh.Children(1).Position = [ 0.5620    0.3969    0.3233    0.2017]; % legend
+
 
 fhArray(2) = fh;
 
