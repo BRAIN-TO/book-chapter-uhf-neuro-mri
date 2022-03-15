@@ -81,7 +81,7 @@ https://doi.org/10.1109/TMI.2008.922699
     - Then, run `uhfbold_plot_acq_duration_epi_spiral`
 
 
-### Acquisition Efficiency Table (Literature Review) (Fig. 24.4.4)
+### Acquisition Efficiency Table (Literature Review) (Fig. 24.5.1)
 - This is not actually code but an excel table `Table24.5.1_AcquisitionEfficiency.xlsx` you may change to your liking, include your favorite sequence etc.
 - It contains data extracted from several papers on matrix size, resolution, TR etc. to compute Acquisition efficiency (resolved voxels per unit time) for the listed publications.
 - There are two sheets in the Table, the first one contains only contains the papers that made it into the figure (best-in-class for the different introduced acquisition types.
