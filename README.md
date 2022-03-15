@@ -1,16 +1,17 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6359855.svg)](https://doi.org/10.5281/zenodo.6359855)
 
+
 # book-chapter-uhf-neuro-mri
 Educational Code related to book *"Ultra High Field Neuro MRI"*, chapter 24: _"BOLD fMRI: Physiology and Acquisition strategies"_
 
 ## Purpose
 
-This repository shall contain code to illustrate certain acquisition considerations for fMRI at ultra-high field, in particular:
+This repository contains code to illustrate certain acquisition considerations for fMRI at ultra-high field, in particular:
 
-- Acquisition Efficiency: 2D spiral/EPIs for different undersampling factors (R) and gradient systems
+- Acquisition Efficiency: Generating 2D spiral/EPIs for different undersampling factors (R) and gradient systems to retrieve their acquisition duration
 - BOLD sensitivity
-- SNR comparison: 2D vs 3D vs multi-band
-- thermal vs physiological noise
+- SNR comparison: 2D vs 3D vs multi-band (simultaneous Multi-slice or SMS)
+- Generation of various example spiral/EPI trajectories
 
 It also serves to recreate certain figures within the book chapter.
 
@@ -19,7 +20,7 @@ It also serves to recreate certain figures within the book chapter.
 ### General
 1. You will have to update the paths in `uhfbold_get_paths` to your system environment. 
 2. Not all code folders are needed (e.g., `recon`), best try out 
-3. For saving the plots you need the [export_fig]() package by Yair Altman 
+3. For saving the plots you need the [export_fig](https://github.com/altmany/export_fig) package by Yair Altman 
 4. At the beginning of a new Matlab session with this code, setup the paths via
 ```
 uhfbold_setup_paths`   
