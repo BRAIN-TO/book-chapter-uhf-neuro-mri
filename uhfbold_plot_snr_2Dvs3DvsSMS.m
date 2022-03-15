@@ -37,9 +37,18 @@
  
 % T1 Values from [Poser2010]
 T1 = 1.4;
-TR = 70e-3; %;65e-3%70e-3;  % TR between consecutive excitations (neighboring slices or re-excitation 3D volume)
-Rz = 4;                     % maximum assumed undersampling factor in slice direction for SMS (MB factor) and 3D
-FOVz = 120; %100; %120;
+
+% TR between consecutive excitations (neighboring slices or re-excitation 3D volume)
+% 50 ms is the favorable trajectory duration for 7T (see Fig. 24.4.1), and
+% I added some buffer for slice excitation, longer TE and contrast cleanup
+% (fat suppression, spoiling)
+TR = 70e-3; % 65e-3; %70e-3; 
+
+% maximum assumed undersampling factor in slice direction for SMS (MB factor) and 3D
+% only affects the 2nd figure with the SMS comparison, Rz = 1 is fixed in
+% Figure 1
+RzFigure2 = 4; % 2;            
+FOVz = 120; % 100; %120;
 
 
 idSubject = 'FEINBERGATRON';
@@ -151,7 +160,7 @@ fhArray(1) = fh;
 %% Plot 2D vs 3D vs SMS SNR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Rz = 4;
+Rz = RzFigure2;
 stringTitle = {'SNR 2D vs SMS vs 3D Acquisition', ...
     sprintf('(T_1 = %4d ms, TR_{slice} = %2d ms, FOV_z = %3d mm, R_z = %d)', ...
     T1*1e3, TR*1e3, FOVz, Rz)};
