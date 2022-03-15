@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6359855.svg)](https://doi.org/10.5281/zenodo.6359855)
 
 
-# book-chapter-uhf-neuro-mri
+# Book Chapter Ultra-high Field (UHF) Neuro MRI
 Educational Code related to book *"Ultra High Field Neuro MRI"*, chapter 24: _"BOLD fMRI: Physiology and Acquisition strategies"_
 
 ## Purpose
@@ -23,8 +23,12 @@ It also serves to recreate certain figures within the book chapter.
 3. For saving the plots you need the [export_fig](https://github.com/altmany/export_fig) package by Yair Altman 
 4. At the beginning of a new Matlab session with this code, setup the paths via
 ```
-uhfbold_setup_paths`   
+uhfbold_setup_paths()
 ```
+5. You are now ready to go and try out any of the next sections to re-create figures from the book chapter or play around to create new trajectories
+
+
+## Code for Reproducing Individual Figures 
 
 ### BOLD sensitivity (Fig. 24.4.1)
 This should run out of the box, if you followed the instruction in General.
