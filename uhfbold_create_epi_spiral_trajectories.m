@@ -19,15 +19,22 @@
 %dknyquist_x = 2*pi/args.FOV(1);
 %args.sc.dwell_acq = dknyquist_x/(args.sc.gamma_1H*args.maxG);
 
-idSubject = 'FEINBERGATRON'; % 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
+%% for readout duration Simulations
+% doUseGradientFile = false; 
+% idSubject = 'FEINBERGATRON'; % 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
+returnToKCenter = true;
+
+%% For Gradient timecourse plots
+doUseGradientFile = true; 
+idSubject = 'UHFBOLD'; % 'MAXTAQ50100INSERTR4';%'MAXTAQ50100INSERT';%'MAXTAQ50100'; % 'MAXTAQ50100'; 'SYNAPTIVE'; %'UHFBOLD';
+iEpiTrajArray = [1];
+iSpiralTrajArray = [2];
+returnToKCenter = false;
+
+% if false, take array population from arrays below
+
+
 vendor = 'SIEMENS'; % 'SIEMENS', 'PHILIPS' for gradient dwell;
-
-iEpiTrajArray = [3];
-iSpiralTrajArray = [4];
-
-doUseGradientFile = false; % if false, take array population from arrays below
-
-
 switch idSubject
     case 'MAXTAQ50100R4'
         RArray = [4];
@@ -155,7 +162,8 @@ for t = iSpiralTrajArray
         'pathData', paths.data, ...
         'interleafOrder', 'R1', ...
         'isBinary',0,...
-        'nZeroFillEnd',0);
+        'nZeroFillEnd',0,...
+        'returnToKCenter', returnToKCenter);
     % copy created gradient some to easily shareable location
     fileGradientIn = fullfile(paths.export, num2str(id), 'gradients.txt');
     fileGradientOut = fullfile(paths.export_single_folder, sprintf('gradients%d.txt',id));
@@ -199,5 +207,6 @@ for t = iEpiTrajArray
         'savedir', paths.data, ...
         'n_zerofill_samples', 0, ...
         'n_extra_echoes_ffe', str2double(nExtraEchoes{t}), ...
-        'delta_TE', repmat(delta_TE, 1, str2double(nExtraEchoes{t})));
+        'delta_TE', repmat(delta_TE, 1, str2double(nExtraEchoes{t})), ...
+        'returnToKCenter', returnToKCenter);
 end

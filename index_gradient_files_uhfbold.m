@@ -7,6 +7,11 @@
 
 %id = [gradient system, res, R, EPI=1,Spiral=2]
 
+%% Demo for Gradient Figure
+1001, 0.22, 0.22, 0, 0.8e-3, 0.8e-3, 0, 40, 1, 1, 40e-3, 200, 0, 0, EPI, stack, 1
+1002, 0.22, 0.22, 0, 0.71e-3, 0.71e-3, 0, 40, 1, 1, 40e-3, 200, 0, out, minTime, stack, 1
+
+
 %% Demo for Talk 1mm spiral and
 % comparative EPI with same k-space are (sqrt(4/pi) factor in resolution)
 1741, 0.22, 0.22, 0, 0.75e-3, 0.75e-3, 0, 4, 1, 1, 40e-3, 200, 0, 0, EPI, stack, 1
