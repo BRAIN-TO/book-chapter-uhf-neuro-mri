@@ -45,6 +45,7 @@ T = table(T2starMeanTable(:,1), T2starMeanTable(:,2), T2starMeanTable(:,3), ...
     'rowNames', rowLabels, ...
     'variableNames', columnLabels);
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% User-defined plotting parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,7 +67,6 @@ paths = uhfbold_get_paths(idSubject);
 labelDefinitionsBS = {'Posse', 'Deichmann', 'PercentChange', 'Poser', 'Relative to individual max'};
 doScaleWithM0 = false; % scale Signal with baseline magnetization (scales with B0); 
 idxDefinitionBS = 2;
-doSavePlots = 1;
 
 % selected T2stars for plot, from table above
 idRowArray = [2 3 3];
@@ -76,6 +76,11 @@ T2starArray = [T({'3 T', '7 T'},:).GM; T({'7 T'},:).Putamen]';
 relMinBS = 0.8; % minimum acceptable BOLD sensitivity within extended readout, relative to maximum
 
 TEArray = (0:1:150); % in ms
+
+% print options
+scalingFactorPrint = 2; %1 is good for on-screen, 2 for publication
+doSavePlots = 1;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Plot BOLD Sensitivity with borders for min/max sensitivity ranges
@@ -87,7 +92,7 @@ TEArray = (0:1:150); % in ms
 stringTitle = sprintf('BOLD Sensitivity (%s) for Varying T_2^* and TE', ...
     labelDefinitionsBS{idxDefinitionBS});
 fh = figure('Name', stringTitle);
-set(fh, 'DefaultAxesFontsize', 16);
+set(fh, 'DefaultAxesFontsize', scalingFactorPrint*16);
 if doScaleWithM0
     S0Array = B0s(idRowArray);
 else
@@ -105,11 +110,11 @@ maxBS = maxBS/C;
 
 hp = plot(TEArray, BS); hold on;
 xlabel('TE (ms)');
-ylabel('Bold Sensitivity (a.u.)');
+ylabel('BOLD Sensitivity (a.u.)');
 
 usedLineColors = get(hp, 'Color');
 
-set(hp, 'LineWidth', 2);
+set(hp, 'LineWidth', scalingFactorPrint*2);
 
 for iT2star = 1:numel(T2starArray)
     T2star = T2starArray(iT2star);
@@ -140,14 +145,15 @@ end
 
 grid on;
 grid minor
-set(hl, 'LineStyle', '-.', 'LineWidth', 2)
+set(hl, 'LineStyle', '-.', 'LineWidth', scalingFactorPrint*2)
 legend(legendArray)
 title(stringTitle);
 
 % set previous attractive figure sizes
-fh.Position = [680   508   866   590];
+fh.Position = [10   10   scalingFactorPrint*866   scalingFactorPrint*590];
 fh.Children(1).Position = [ 0.5620    0.3969    0.3233    0.2017]; % legend
 fhArray(1) = fh;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BOLD Sensitivity as Difference in T2*,
@@ -175,9 +181,9 @@ else
 end
 
 
-stringTitle = 'T2* Signal and Differences (BOLD Sensitivity) for varying TE';
+stringTitle = 'T_2^* Signal & Differences (BOLD Sensitivity) for varying TE';
 fh = figure('Name', stringTitle);
-set(fh, 'DefaultAxesFontsize', 16);
+set(fh, 'DefaultAxesFontsize', scalingFactorPrint*16);
 
 % match colors to other plot, correspondence via field strength
 matchingLineColors = usedLineColors([3 1 2]);
@@ -197,27 +203,28 @@ for iT2star = iT2starArray
     % plot signal and Bold sensitivity, adjust line styles
     hp2(:,iT2star) = plot(TEArray, [Sbase, Sactive, 10*BSasDiff, BSasDiff./Sbase]); hold on;
     set(hp2(:,iT2star), 'Color', matchingLineColors{iT2star});
-    set(hp2(:,iT2star), 'LineWidth', 2);
+    set(hp2(:,iT2star), 'LineWidth', scalingFactorPrint*2);
     hp2(1,iT2star).LineStyle = '--';
     hp2(3,iT2star).LineStyle = '-.';
     hp2(4,iT2star).LineStyle = ':';
     hl(iT2star) = line(TEopt(iT2star)*[1, 1], [0 10*sqrt(abs(funBSDiffSquare(TEopt(iT2star))))]);
-    set(hl(iT2star), 'LineStyle', '-.', 'LineWidth', 2, 'Color', matchingLineColors{iT2star});
+    set(hl(iT2star), 'LineStyle', '-.', 'LineWidth', scalingFactorPrint*2, 'Color', matchingLineColors{iT2star});
     
     if iT2star == iT2starArray(end) % first legend entries verbose
         stringLegend(:,iT2star) = strcat(colLabels{iT2star},  ...
             {
-            ' Baseline T_2^* Signal'
-            ' Activated T_2^* Signal'
-            ' Difference x 10 (BOLD Sensitivity)'
-            ' Relative Signal Change (\Delta S / S)'
+            '   Baseline T_2^* Signal'
+            '   Activated T_2^* Signal'
+            '   Difference x 10 (BOLD Sensitivity)'
+            '   Relative Signal Change (\Delta S / S)'
             });
     else
         stringLegend(1:4,iT2star) = colLabels(iT2star);
     end
 end
-legend(reshape(hp2(:, iT2starArray), 1, []), ...
+leg = legend(reshape(hp2(:, iT2starArray), 1, []), ...
     reshape(stringLegend(:,iT2starArray), 1, []), 'NumColumns', numel(iT2starArray));
+leg.ItemTokenSize = scalingFactorPrint*[29 18];
 grid on;
 grid minor
 title(stringTitle);
@@ -226,11 +233,11 @@ ylabel('Signal (a.u.)');
 
 
 % set previous attractive figure sizes
-fh.Position = [680 534 793 564];
-fh.Children(1).Position = [0.3182    0.6735    0.5738    0.2332]; % legend
+fh.Position = [10 10 scalingFactorPrint*793 scalingFactorPrint*564];
+fh.Children(1).Position = [0.2982    0.6435    0.5938    0.2332]; % legend
 fhArray(2) = fh;
 
 %% save Plots
 if doSavePlots
-    save_plot_publication(fhArray, paths.figures, [1]);
+    save_plot_publication(fhArray, paths.figures, [3]);
 end
