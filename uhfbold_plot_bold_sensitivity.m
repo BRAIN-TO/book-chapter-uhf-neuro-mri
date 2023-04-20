@@ -65,7 +65,7 @@ paths = uhfbold_get_paths(idSubject);
 
 labelDefinitionsBS = {'Posse', 'Deichmann', 'PercentChange', 'Poser', 'Relative to individual max'};
 doScaleWithM0 = false; % scale Signal with baseline magnetization (scales with B0); 
-idxDefinitionBS = 1;
+idxDefinitionBS = 2;
 doSavePlots = 1;
 
 % selected T2stars for plot, from table above
